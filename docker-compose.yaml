@@ -1,0 +1,40 @@
+version: '3.4'
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: ./docker/nginx/dockerfile
+    restart: unless-stopped
+    tty: true
+    networks:
+      - app-network
+    volumes:
+      - ./var/www/html/
+      - ./nginx.conf:/etc/nginx/nginx.conf
+
+    ports:
+      - '80:80'
+  database:
+    image: mariadb
+    environment:
+      MYSQL_DATABASE: duch
+      MYSQL_USER: patrikduch
+      MYSQL_PASSWORD: duchpatrik
+      MYSQL_ROOT_PASSWORD: duchpatrik
+    volumes:
+      - ./docker/mariadb:/var/lib/mysql
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+
+#Docker Networks
+networks:
+  app-network:
+    driver: bridge
+
+#Volumes
+volumes:
+  dbdata:
+    driver: local
